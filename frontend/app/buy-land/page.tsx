@@ -49,12 +49,12 @@ export default function BuyLand() {
           return {
             id: details.landId.toString(),
             addressOfLand: details.addressOfLand,
-            area: ethers.utils.formatUnits(details.area, 'wei'),
+            area: ethers.formatUnits(details.area, 'wei'),
             owner: {
               address: details.owner.userAddress,
               name: details.owner.name
             },
-            price: ethers.utils.formatEther(details.price),
+            price: ethers.formatEther(details.price),
             priceWei: details.price
           };
         })

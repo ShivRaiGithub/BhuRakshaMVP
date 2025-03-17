@@ -66,16 +66,16 @@ export default function SellLand() {
             lands.push({
               id: land.landId.toString(),
               addressOfLand: land.addressOfLand,
-              area: ethers.utils.formatUnits(land.area, 'wei'),
+              area: ethers.formatUnits(land.area, 'wei'),
               registryDateAndTime: new Date(land.registryDateAndTime.toNumber() * 1000).toLocaleString(),
               isForSale: land.isForSale,
-              price: land.isForSale ? ethers.utils.formatEther(land.price) : '0'
+              price: land.isForSale ? ethers.formatEther(land.price) : '0'
             });
             
             // Initialize price state for this land
             setPrices(prevPrices => ({
               ...prevPrices,
-              [land.landId.toString()]: land.isForSale ? ethers.utils.formatEther(land.price) : ''
+              [land.landId.toString()]: land.isForSale ? ethers.formatEther(land.price) : ''
             }));
           }
         } catch (err) {

@@ -7,6 +7,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 export default function Home() {
   const [account, setAccount] = useState('');
   const [isConnected, setIsConnected] = useState(false);
