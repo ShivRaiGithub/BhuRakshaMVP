@@ -118,83 +118,82 @@ export default function LandHistory() {
       setLoading(false);
     }
   }
-
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-50 p-6">
       <Head>
         <title>Land History - Land Registry</title>
       </Head>
-      
+  
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-2xl font-bold mb-6 text-center">Land Ownership History</h1>
-          
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-6 border border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Land Ownership History</h1>
+  
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded mb-4 font-semibold">
               {error}
             </div>
           )}
-          
+  
           <form onSubmit={searchLandHandler} className="flex flex-col md:flex-row gap-4 mb-6">
             <input
               type="text"
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter the address of the land"
+              className="flex-grow px-4 py-2 border border-gray-400 rounded-md text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter the land address"
               value={addressOfLand}
               onChange={(e) => setAddressOfLand(e.target.value)}
               required
             />
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline whitespace-nowrap"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition"
               disabled={loading}
             >
               {loading ? 'Searching...' : 'Search'}
             </button>
           </form>
         </div>
-        
+  
         {searchPerformed && !error && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
             {landDetails ? (
               <>
-                <h2 className="text-xl font-semibold mb-4">Land Details</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Land Details</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-gray-800">
                   <div>
-                    <p><span className="font-medium">Land ID:</span> {landDetails.id}</p>
-                    <p><span className="font-medium">Address:</span> {landDetails.addressOfLand}</p>
-                    <p><span className="font-medium">Area:</span> {landDetails.area} sq. meters</p>
+                    <p><span className="font-semibold">Land ID:</span> {landDetails.id}</p>
+                    <p><span className="font-semibold">Address:</span> {landDetails.addressOfLand}</p>
+                    <p><span className="font-semibold">Area:</span> {landDetails.area} sq. meters</p>
                   </div>
                   <div>
-                    <p><span className="font-medium">Current Owner:</span> {landDetails.owner.name} ({landDetails.owner.address.substring(0, 8)}...)</p>
-                    <p><span className="font-medium">Registration Date:</span> {landDetails.registryDateAndTime}</p>
-                    <p><span className="font-medium">Status:</span> {landDetails.isForSale ? `For Sale (${landDetails.price} ETH)` : 'Not for Sale'}</p>
+                    <p><span className="font-semibold">Current Owner:</span> {landDetails.owner.name} ({landDetails.owner.address.substring(0, 8)}...)</p>
+                    <p><span className="font-semibold">Registration Date:</span> {landDetails.registryDateAndTime}</p>
+                    <p><span className="font-semibold">Status:</span> {landDetails.isForSale ? `For Sale (${landDetails.price} ETH)` : 'Not for Sale'}</p>
                   </div>
                 </div>
-                
-                <h2 className="text-xl font-semibold mb-4">Ownership History</h2>
+  
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Ownership History</h2>
                 {history.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                    <table className="min-w-full border border-gray-300">
+                      <thead className="bg-gray-200">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Type</th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Date</th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Details</th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-white divide-y divide-gray-300">
                         {history.map((event, index) => (
-                          <tr key={index}>
+                          <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${event.type === 'Registration' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                              <span className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${event.type === 'Registration' ? 'bg-green-200 text-green-800' : 'bg-blue-200 text-blue-800'}`}>
                                 {event.type}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               {event.date}
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
+                            <td className="px-6 py-4 text-sm text-gray-700">
                               {event.type === 'Registration' ? (
                                 <span>Registered by {event.registeredBy.substring(0, 8)}...</span>
                               ) : (
@@ -207,21 +206,21 @@ export default function LandHistory() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-gray-500">No ownership transfer history found.</p>
+                  <p className="text-gray-700 font-medium">No ownership transfer history found.</p>
                 )}
               </>
             ) : (
-              <p className="text-center text-gray-500">No land found with this address.</p>
+              <p className="text-center text-gray-700 font-medium">No land found with this address.</p>
             )}
           </div>
         )}
-        
+  
         <div className="mt-6 text-center">
-          <Link href="/" className="text-blue-500 hover:text-blue-700">
+          <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold">
             Back to Home
           </Link>
         </div>
       </div>
     </div>
   );
-}
+}  

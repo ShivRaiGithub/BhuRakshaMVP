@@ -45,7 +45,7 @@ export default function BuyLand() {
       // Get details for each land
       const landsDetails = await Promise.all(
         landIds.map(async (id) => {
-          const details = await contract.lands(id);
+          const details = await contract.lands(Number(id)+1);
           return {
             id: details.landId.toString(),
             addressOfLand: details.addressOfLand,
@@ -81,7 +81,7 @@ export default function BuyLand() {
 
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
       // Check if user is registered

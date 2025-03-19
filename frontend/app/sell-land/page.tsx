@@ -40,7 +40,7 @@ export default function SellLand() {
 
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const userAddress = await signer.getAddress();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 
@@ -57,9 +57,9 @@ export default function SellLand() {
       
       // Get all lands and filter by owner
       const lands = [];
-      for (let i = 1; i <= count.toNumber(); i++) {
+      for (let i = 1; i <= Number(count); i++) {
         try {
-          const land = await contract.lands(i);
+          const land = await contract.lands(i+1);
           
           // Check if the current user is the owner
           if (land.owner.userAddress.toLowerCase() === userAddress.toLowerCase()) {
@@ -120,7 +120,7 @@ export default function SellLand() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
       // Convert price to wei
-      const priceInWei = ethers.utils.parseEther(prices[landId]);
+      const priceInWei = ethers.parseEther(prices[landId]);
       
       // List land for sale
       const tx = await contract.listLandForSale(landId, priceInWei);
@@ -147,8 +147,8 @@ export default function SellLand() {
       }
 
       await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
       // Cancel land sale
@@ -164,84 +164,83 @@ export default function SellLand() {
       setCancelingListing(false);
     }
   }
-
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-50 p-6">
       <Head>
         <title>Sell Land - Land Registry</title>
       </Head>
-      
+  
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-2xl font-bold mb-6 text-center">Sell Your Land</h1>
-          
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Sell Your Land</h1>
+  
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded mb-4 font-semibold">
               {error}
             </div>
           )}
-          
+  
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <div className="bg-green-100 border border-green-500 text-green-800 px-4 py-3 rounded mb-4 font-semibold">
               {success}
             </div>
           )}
-          
+  
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Your Lands</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Your Lands</h2>
             <button
               onClick={fetchMyLands}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 px-4 rounded-lg shadow-sm transition"
               disabled={loading}
             >
               Refresh
             </button>
           </div>
-          
+  
           {loading ? (
             <div className="text-center py-10">
               <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 mx-auto animate-spin"></div>
-              <p className="mt-4 text-gray-600">Loading your lands...</p>
+              <p className="mt-4 text-gray-700">Loading your lands...</p>
             </div>
           ) : myLands.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full border border-gray-300">
+                <thead className="bg-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price (ETH)</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Address</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Area</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Price (ETH)</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Action</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {myLands.map((land) => (
-                    <tr key={land.id}>
+                <tbody className="bg-white divide-y divide-gray-300">
+                  {myLands.map((land, index) => (
+                    <tr key={land.id} className={`${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {land.id}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {land.addressOfLand}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {land.area} sq. meters
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${land.isForSale ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${land.isForSale ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800'}`}>
                           {land.isForSale ? 'For Sale' : 'Not For Sale'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
                         {land.isForSale ? (
-                          land.price
+                          <span className="text-gray-800">{land.price}</span>
                         ) : (
                           <input
                             type="number"
                             step="0.01"
                             placeholder="Enter price"
-                            className="border rounded px-2 py-1 w-24"
+                            className="border border-gray-400 rounded-lg px-3 py-2 w-28 focus:ring-2 focus:ring-blue-500"
                             value={prices[land.id] || ''}
                             onChange={(e) => handlePriceChange(land.id, e.target.value)}
                           />
@@ -251,7 +250,7 @@ export default function SellLand() {
                         {land.isForSale ? (
                           <button
                             onClick={() => cancelSaleHandler(land.id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-600 hover:text-red-800 font-semibold transition"
                             disabled={cancelingListing}
                           >
                             {cancelingListing ? 'Processing...' : 'Cancel Sale'}
@@ -259,7 +258,7 @@ export default function SellLand() {
                         ) : (
                           <button
                             onClick={() => listLandForSaleHandler(land.id)}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="text-blue-600 hover:text-blue-800 font-semibold transition"
                             disabled={listingLand}
                           >
                             {listingLand ? 'Processing...' : 'List For Sale'}
@@ -273,20 +272,20 @@ export default function SellLand() {
             </div>
           ) : (
             <div className="text-center py-10">
-              <p className="text-gray-600">You don't own any lands yet.</p>
-              <Link href="/register-land" className="text-blue-500 hover:text-blue-700 mt-2 inline-block">
+              <p className="text-gray-700 font-medium">You don't own any lands yet.</p>
+              <Link href="/register-land" className="text-blue-600 hover:text-blue-800 font-semibold mt-2 inline-block">
                 Register a Land
               </Link>
             </div>
           )}
         </div>
-        
+  
         <div className="mt-6 text-center">
-          <Link href="/" className="text-blue-500 hover:text-blue-700">
+          <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold">
             Back to Home
           </Link>
         </div>
       </div>
     </div>
   );
-}
+}  

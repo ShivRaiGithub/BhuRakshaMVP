@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+
 
 export default function RegisterLand() {
   const [addressOfLand, setAddressOfLand] = useState('');
@@ -23,7 +24,7 @@ export default function RegisterLand() {
     "function userExists(address) external view returns (bool)"
   ];
 
-  async function registerLandHandler(e) {
+  async function registerLandHandler(e:any) {
     e.preventDefault();
     
     if (!addressOfLand || !area) {
@@ -42,7 +43,7 @@ export default function RegisterLand() {
 
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
       // Check if user is registered
@@ -55,7 +56,7 @@ export default function RegisterLand() {
         return;
       }
 
-      const areaInWei = ethers.utils.parseUnits(area, 'wei');
+      const areaInWei = ethers.parseUnits(area, 'wei');
       const tx = await contract.registerLand(addressOfLand, areaInWei);
       await tx.wait();
       
@@ -72,72 +73,75 @@ export default function RegisterLand() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <Head>
-        <title>Register Land - Land Registry</title>
-      </Head>
-      
-      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Register Land</h1>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-        
-        {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {success}
-          </div>
-        )}
-        
-        <form onSubmit={registerLandHandler}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="addressOfLand">
-              Land Address
-            </label>
-            <input
-              id="addressOfLand"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter the address of the land"
-              value={addressOfLand}
-              onChange={(e) => setAddressOfLand(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="area">
-              Area (in square meters)
-            </label>
-            <input
-              id="area"
-              type="number"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter the area"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              required
-            />
-          </div>
-          
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            disabled={loading}
-          >
-            {loading ? 'Registering...' : 'Register Land'}
-          </button>
-        </form>
-        
-        <div className="mt-4 text-center">
-          <Link href="/" className="text-blue-500 hover:text-blue-700">
-            Back to Home
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gray-100 p-6">
+  <Head>
+    <title>Register Land - Land Registry</title>
+  </Head>
+
+  <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">
+      Register Land
+    </h1>
+
+    {error && (
+      <div className="bg-red-100 border border-red-500 text-red-800 px-5 py-3 rounded-lg mb-4 text-lg font-medium">
+        {error}
       </div>
+    )}
+
+    {success && (
+      <div className="bg-green-100 border border-green-500 text-green-800 px-5 py-3 rounded-lg mb-4 text-lg font-medium">
+        {success}
+      </div>
+    )}
+
+    <form onSubmit={registerLandHandler}>
+      <div className="mb-5">
+        <label className="block text-gray-800 font-semibold text-lg mb-2" htmlFor="addressOfLand">
+          Land Address
+        </label>
+        <input
+          id="addressOfLand"
+          type="text"
+          className="w-full px-4 py-3 border border-gray-400 rounded-lg text-gray-900 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          placeholder="Enter the address of the land"
+          value={addressOfLand}
+          onChange={(e) => setAddressOfLand(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-gray-800 font-semibold text-lg mb-2" htmlFor="area">
+          Area (in square meters)
+        </label>
+        <input
+          id="area"
+          type="number"
+          className="w-full px-4 py-3 border border-gray-400 rounded-lg text-gray-900 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          placeholder="Enter the area"
+          value={area}
+          onChange={(e) => setArea(e.target.value)}
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={loading}
+      >
+        {loading ? 'Registering...' : 'Register Land'}
+      </button>
+    </form>
+
+    <div className="mt-5 text-center">
+      <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold text-lg">
+        Back to Home
+      </Link>
     </div>
+  </div>
+</div>
+
   );
 }
